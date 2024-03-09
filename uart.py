@@ -12,15 +12,16 @@ def getPort():
             commPort = (splitPort[0])
     # return commPort
     return "COM3"
-    # return "dev/ttyUSB3"
-    # return "/dev/ttyS3"
+    # return "/dev/pts/5"
 
 if getPort() != "None":
     ser = serial.Serial( port=getPort(), baudrate=115200)
+    print(ser)
 
 mess = ""
 def processData(client, data):
     data = data.replace("!", "")
+    # data = data.replace("%", "")
     data = data.replace("#", "")
     splitData = data.split(":")
     print(splitData)
@@ -38,7 +39,10 @@ def readSerial(client):
     if (bytesToRead > 0):
         global mess
         mess = mess + ser.read(bytesToRead).decode("UTF-8")
+        print(mess)
         while ("#" in mess) and ("!" in mess):
+        # while ("#" in mess) and ("%" in mess):
+            # start = mess.find("%")
             start = mess.find("!")
             end = mess.find("#")
             processData(client, mess[start:end + 1])
@@ -46,3 +50,6 @@ def readSerial(client):
                 mess = ""
             else:
                 mess = mess[end+1:]
+
+def writeData(data):
+    ser.write(str(data).encode('utf-8'))

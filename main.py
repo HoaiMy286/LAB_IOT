@@ -1,5 +1,6 @@
 import sys
 import cv2  # Install opencv-python
+import os
 from Adafruit_IO import MQTTClient
 from simple_ai import *
 from uart import *
@@ -9,7 +10,7 @@ import random
 
 AIO_FEED_IDs = ["led", "pump"]
 AIO_USERNAME = "MTPQ_BKU"
-AIO_KEY = "aio_tSsv49W5tPo42LVjwsSYnGlPpgte"
+AIO_KEY = "aio_tkHs40fn5WDpsNUJD9sa2ZlRIdYW"
 
 def connected(client):
     print("Ket noi thanh cong ...")
@@ -25,6 +26,30 @@ def disconnected(client):
 
 def message(client , feed_id , payload):
     print("Nhan du lieu: " + payload + ", feed id: " + feed_id)
+    if feed_id == "led":
+        if payload == "0":  # OFF
+            writeData("Led_OFF") 
+        else:               # ON
+            writeData("Led_ON")
+    if feed_id == "pump":
+        if payload == "0":  # OFF
+            writeData("Pump_OFF") 
+        else:               # ON
+            writeData("Pump_ON")
+
+# ////////////// WSL /////////////
+#  def message(client , feed_id , payload):
+#     print("Nhan du lieu: " + payload + ", feed id: " + feed_id)
+#     if feed_id == "led":
+#         if payload == "0":  # OFF
+#             os.system("echo \"LED_OFF\" > /dev/pts/4")
+#         else:               # ON
+#             os.system("echo \"LED_ON\" > /dev/pts/4")
+#     if feed_id == "pump":
+#         if payload == "0":  # OFF
+#             os.system("echo \"PUMP_OFF\" > /dev/pts/4")
+#         else:               # ON
+#             os.system("echo \"PUMP_ON\" > /dev/pts/4")       
 
 client = MQTTClient(AIO_USERNAME , AIO_KEY)
 client.on_connect = connected
@@ -41,27 +66,7 @@ counter_ai = 5
 ai_result = ""
 previous_ai_result = ""
 
-while True:
-    # counter = counter - 1
-    # if counter <= 0:
-    #     counter = 10
-
-    #     if sensor_type == 0:
-    #         print("Temperature...")
-    #         temp = random.randint(20, 60)
-    #         client.publish("temperature", temp)
-    #         sensor_type = 1
-    #     elif sensor_type == 1:
-    #         print("Humidity")
-    #         humi = random.randint(50, 70)
-    #         client.publish("humidity", humi)
-    #         sensor_type = 2
-    #     elif sensor_type == 2:
-    #         print("Light...")
-    #         light = random.randint(500, 1500)
-    #         client.publish("light", light)
-    #         sensor_type = 0
-  
+while True:  
     readSerial(client)
 
     counter_ai = counter_ai - 1
@@ -76,10 +81,3 @@ while True:
             client.publish("ai", ai_result)
 
     time.sleep(1)
-
-    # Listen to the keyboard for presses.
-    # keyboard_input = cv2.waitKey(1)
-
-    # # 27 is the ASCII for the esc key on your keyboard.
-    # if keyboard_input == 27:
-    #     break

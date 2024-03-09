@@ -48,13 +48,3 @@ def image_detector():
     print("Confidence Score:", str(np.round(confidence_score * 100))[:-2], "%")
 
     return class_name[2:]
-
-    # # Listen to the keyboard for presses.
-    # keyboard_input = cv2.waitKey(1)
-
-    # # 27 is the ASCII for the esc key on your keyboard.
-    # if keyboard_input == 27:
-    #     break
-
-# camera.release()
-# cv2.destroyAllWindows()
